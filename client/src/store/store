@@ -1,0 +1,10 @@
+import { configureStore } from "@reduxjs/toolkit";
+import listslice from "../features/lists/listSlice";
+
+// ctreate store using configureStore by passing reducers
+const store = configureStore({
+  reducer: {
+    listSlice: listslice,
+  },
+});
+export default store;

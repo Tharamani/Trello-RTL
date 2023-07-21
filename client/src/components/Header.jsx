@@ -1,10 +1,7 @@
-import "./Header.css";
-export const Header = () => {
-  return (
-    <>
-      <div className="header">
-        <h1>Trello-clone</h1>
-      </div>
-    </>
-  );
-};
+import React from "react";
+
+function Header() {
+  return <div className="app-header p-3 border bg-blue-100">Header</div>;
+}
+
+export default Header;
