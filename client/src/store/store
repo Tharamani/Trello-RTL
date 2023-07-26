@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import listslice from "../features/lists/listSlice";
+import boardslice from "../features/boards/boardSlice";
 
-// ctreate store using configureStore by passing reducers
+// create store using configureStore
 const store = configureStore({
   reducer: {
     listSlice: listslice,
+    boardSlice: boardslice,
   },
 });
 export default store;

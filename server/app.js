@@ -15,7 +15,7 @@ try {
   app.use("/cards", cardRouter);
   connectDb();
 
-  app.listen(process.env.SERVER_PORT || 6000, () => {
+  app.listen(process.env.SERVER_PORT || 4000, () => {
     console.log(`App listening on port ${process.env.SERVER_PORT}`);
   });
 } catch (error) {

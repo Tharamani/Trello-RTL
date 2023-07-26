@@ -1,27 +1,32 @@
 import React, { useState } from "react";
-import { addList } from "../features/lists/listSlice";
-import { useDispatch } from "react-redux";
-import { addNewList, addNewCard } from "../features/lists/listSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addNewList,
+  addNewCard,
+  selectBoardId,
+} from "../features/lists/listSlice";
+import { addNewBoard } from "../features/boards/boardSlice";
 
 function AddNew({ type, listId }) {
   const [title, setTitle] = useState("");
   const [isFormVisible, setIsFormVisible] = useState(false);
-
   const dispatch = useDispatch();
+
+  const boardId = useSelector(selectBoardId);
 
   const saveCard = (e) => {
     try {
       e.preventDefault();
-      console.log("saveCard : ", title);
+      // console.log("saveCard : ", title);
 
       if (!title) throw new Error("Please enter title");
 
-      if (type) {
-        console.log("add card", type);
+      if (type === "card") {
+        // console.log("add card", type);
         dispatch(addNewCard({ title, list_id: listId }));
       } else {
-        console.log("add list", type);
-        dispatch(addNewList({ title }));
+        // console.log("add list", type);
+        dispatch(addNewList({ title, boardId: boardId }));
       }
 
       setTitle("");
