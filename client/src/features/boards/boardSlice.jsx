@@ -3,6 +3,7 @@ import * as api from "../../api/api";
 
 export const selectAllBoards = (state) => state.boardSlice.boards;
 
+// get all boards
 export const fetchBoards = createAsyncThunk("boards/fetchBoards", async () => {
   const response = await api.getBoards();
   return response;

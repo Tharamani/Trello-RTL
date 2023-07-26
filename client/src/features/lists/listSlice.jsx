@@ -2,15 +2,27 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as api from "../../api/api";
 
 export const selectAllLists = (state) => state.listSlice.lists;
+
 export const selectBoardId = (state) => state.listSlice.boardId;
 
+// find list by id
+export const findCardById = (prevCards, pCardId) => {
+  return prevCards.find((card) => card.card_id === pCardId);
+};
+
+// find card by id
+export const findListById = (prevItems, pListId) => {
+  return prevItems.find((list) => list.list_id === pListId);
+};
+
+// get all lists
 export const fetchLists = createAsyncThunk("lists/fetchLists", async (id) => {
   console.log("fetch lsits : id ", id);
   const response = await api.getLists(id);
   return response;
 });
 
-// Thunk to add a new list
+// add a new list
 export const addNewList = createAsyncThunk(
   "lists/addNewList",
   async (pItem) => {
@@ -27,7 +39,7 @@ export const addNewList = createAsyncThunk(
   }
 );
 
-// Thunk to add a new card
+// add a new card
 export const addNewCard = createAsyncThunk("lists/addNewCard", async (item) => {
   try {
     const response = await api.createCard({ title: item.title }, item.list_id);
@@ -38,7 +50,7 @@ export const addNewCard = createAsyncThunk("lists/addNewCard", async (item) => {
   }
 });
 
-// Thunk to add a new card
+// update card
 export const updateCard = createAsyncThunk("lists/updateCard", async (item) => {
   try {
     console.log("updateCard : item", item);
@@ -53,6 +65,7 @@ export const updateCard = createAsyncThunk("lists/updateCard", async (item) => {
   }
 });
 
+//remove card
 export const removeCard = createAsyncThunk("lists/removeCard", async (item) => {
   try {
     console.log("removeCard : item", item);
@@ -103,11 +116,13 @@ const listsSlice = createSlice({
     },
   },
   extraReducers(builder) {
+    // add new list
     builder.addCase(addNewList.fulfilled, (state, action) => {
       // We can directly add the new list object to our lists array
       state.lists.push(action.payload);
     });
 
+    // add new card
     builder.addCase(addNewCard.fulfilled, (state, action) => {
       let existingList = state.lists.find(
         (list) => list.list_id === action.payload.list_id
@@ -117,39 +132,35 @@ const listsSlice = createSlice({
       existingList.cards.push(action.payload);
     });
 
+    // get lists
     builder.addCase(fetchLists.fulfilled, (state, action) => {
       state.lists = action.payload;
     });
 
+    // edit card
     builder.addCase(updateCard.fulfilled, (state, action) => {
       // state.lists = action.payload;
       console.log("updateCard action", action);
-      state.lists
-        .find((list) => list.list_id === action.payload.list_id)
-        .cards.find(
-          (card) => card.card_id === action.payload.card_id
-        ).card_name = action.payload.card_name;
+      findListById(state.lists, action.payload.list_id).cards.find(
+        (card) => card.card_id === action.payload.card_id
+      ).card_name = action.payload.card_name;
     });
 
+    // delete card
     builder.addCase(removeCard.fulfilled, (state, action) => {
       console.log("updateCard action", action);
-      const cardsArr = state.lists.find(
-        (list) => list.list_id === action.payload.listId
-      ).cards;
+      const existingList = findListById(state.lists, action.payload.listId);
 
-      const cardDel = state.lists
-        .find((list) => list.list_id === action.payload.listId)
-        .cards.find((card) => {
-          if (card.card_id === action.payload.card_id);
-        });
-
-      cardsArr.splice(cardsArr.indexOf(cardDel), 1);
+      existingList.cards.splice(
+        existingList.cards.indexOf(
+          findCardById(existingList.cards, action.payload.card_id)
+        ),
+        1
+      );
     });
   },
 });
 
-// console.log("listsSlice.actions", listsSlice.actions);
 export const { moveCard, setBoardId } = listsSlice.actions;
 
-// console.log("listsSlice.reducer", listsSlice.reducer);
 export default listsSlice.reducer;

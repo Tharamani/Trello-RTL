@@ -53,7 +53,9 @@ function AddNew({ type, listId }) {
             placeholder={type ? "Enter card title" : "Enter list title"}
           ></input>
           <div className="mt-3">
-            <button className="p-3 py-1 bg-blue-500 text-white">Save</button>
+            <button className="p-3 py-1 bg-blue-500 text-white rounded-md">
+              Save
+            </button>
             <button onClick={(e) => setIsFormVisible(false)} className="ml-3">
               X
             </button>

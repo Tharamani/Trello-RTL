@@ -3,12 +3,13 @@ import { useDrag, useDrop } from "react-dnd";
 import { useDispatch } from "react-redux";
 import { moveCard } from "../features/lists/listSlice";
 import EditCard from "./EditCard";
+import MyModal from "./MyModal";
 
-function Card({ card, index, listId, list }) {
-  console.log("list Card>>>>>>>", list);
+function Card({ card, index, listId }) {
   const dispatch = useDispatch();
   const ref = useRef(null);
   const [isEdit, setIsEdit] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // useDrag will be responsible for making an element draggable
   const [{ isDragging }, drag] = useDrag({
@@ -70,26 +71,39 @@ function Card({ card, index, listId, list }) {
   };
 
   const handleClick = (e) => {
-    console.log("handleClick: ", e.target);
     setIsEdit(true);
   };
 
+  const onClose = () => setShowModal(false);
+
   return (
     <>
-      {isEdit && (
-        <EditCard pCard={card} setIsEditCard={setIsEditCard} listId={listId} />
-      )}
+      <div>
+        {isEdit && (
+          <EditCard
+            pCard={card}
+            setIsEditCard={setIsEditCard}
+            listId={listId}
+          />
+        )}
+      </div>
       {!isEdit && (
         <div
           ref={ref}
-          className="bg-white mt-2 p-3 shadow-md rounded-md opacity-${isDragging ? 0.5 : 1}"
+          className="bg-white mt-2 p-3 shadow-md rounded-md opacity-${isDragging ? 0.5 : 1} relative"
         >
-          {card.card_name}
-          <button onClick={handleClick} className="hover:bg-gray-300">
+          <button onClick={(e) => setShowModal(true)}>{card.card_name}</button>
+          {/* <button>{card.card_name}</button> */}
+
+          <button
+            onClick={handleClick}
+            className="hover:bg-gray-300 absolute top-0 right-0 p-3 mb-1"
+          >
             ...
           </button>
         </div>
       )}
+      <MyModal card={card} showModal={showModal} onClose={onClose} />
     </>
   );
 }

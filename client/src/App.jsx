@@ -10,17 +10,17 @@ import store from "./store/store";
 function App() {
   return (
     <>
-      <Provider store={store}>
-        <DndProvider backend={HTML5Backend}>
-          <div id="app">
+      <div id="app">
+        <Provider store={store}>
+          <DndProvider backend={HTML5Backend}>
             <Header />
             <div className="flex">
               <SideBar />
               <Body />
             </div>
-          </div>
-        </DndProvider>
-      </Provider>
+          </DndProvider>
+        </Provider>
+      </div>
     </>
   );
 }

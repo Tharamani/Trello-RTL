@@ -5,13 +5,11 @@ import { addNewBoard } from "../features/boards/boardSlice";
 function AddNewBoard() {
   const [title, setTitle] = useState("");
   const [isFormVisible, setIsFormVisible] = useState(false);
-
   const dispatch = useDispatch();
 
   const saveBoard = (e) => {
     try {
       e.preventDefault();
-      console.log("saveBoard : ", title);
       if (!title) throw new Error("Please enter title");
       dispatch(addNewBoard({ title }));
 
@@ -25,7 +23,7 @@ function AddNewBoard() {
     <>
       {!isFormVisible && (
         <button
-          className="p-3 hover:bg-gray-300"
+          className="p-3 hover:bg-gray-300 "
           onClick={(e) => setIsFormVisible(true)}
         >
           +
@@ -34,7 +32,7 @@ function AddNewBoard() {
       {isFormVisible && (
         <form
           onSubmit={saveBoard}
-          className="p-3 mt-3 w-72 h-72 shadow-md rounded-md bg-slate-50 absolute"
+          className="p-3 mt-3 w-72 h-72 shadow-md rounded-md bg-blue-100 absolute"
         >
           <div>
             <h3 className="text-center">Create board</h3>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateCard, removeCard } from "../features/lists/listSlice";
+import Options from "./Options";
 
 function EditCard({ pCard, setIsEditCard, listId }) {
-  //   console.log("pCard editCard jsx", listId);
+  console.log("edit card for list id ", pCard, listId);
   const [title, setTitle] = useState(pCard.card_name);
   const dispatch = useDispatch();
 
@@ -14,30 +15,26 @@ function EditCard({ pCard, setIsEditCard, listId }) {
     setIsEditCard(false);
   };
 
-  const deleteCard = async (e) => {
-    console.log("deleteCard ");
-    dispatch(removeCard({ ...pCard, listId }));
-    setIsEditCard(false);
-  };
-
   return (
     <>
-      <div>
+      <div className="">
         <textarea
-          className="shadow-md rounded-md p-3"
+          className="shadow-md rounded-md p-3 w-full"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          autoFocus={true}
         ></textarea>
         <button
           onClick={saveCard}
-          className="mt-4 p-3 py-1 bg-blue-500 text-white shadow-md rounded-md"
+          className="p-3 py-1 bg-blue-500 text-white shadow-md rounded-md"
         >
           Save
         </button>
-        <button onClick={deleteCard}>Archive</button>
       </div>
+
+      <Options pCard={pCard} listId={listId} setIsEditCard={setIsEditCard} />
     </>
   );
 }

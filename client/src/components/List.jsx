@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Card from "./Card";
 import AddNew from "./AddNew";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchLists, selectAllLists } from "../features/lists/listSlice";
+import { useSelector } from "react-redux";
+import { selectAllLists } from "../features/lists/listSlice";
 
 function List() {
   const lists = useSelector(selectAllLists);
@@ -10,7 +10,7 @@ function List() {
   return (
     <>
       {lists.map((list) => (
-        <div key={list.list_id} className="p-3 w-1/6">
+        <div key={list.list_id} className="p-3 w-1/6 relative">
           <div className="p-3 bg-gray-200 shadow-md rounded-md">
             <div className="mb-4">{list.list_name}</div>
             {list?.cards?.length > 0 &&
@@ -20,7 +20,6 @@ function List() {
                   card={card}
                   index={index}
                   listId={list.list_id}
-                  list={list}
                 />
               ))}
             <div className="mt-3">
@@ -29,9 +28,8 @@ function List() {
           </div>
         </div>
       ))}
-      <div className="p-3 w-1/3">
-        <div className="p-3 bg-gray-200">
-          {/* <Card /> */}
+      <div className="p-3 w-1/5">
+        <div className="p-3 bg-gray-200 shadow-md rounded-md">
           <AddNew />
         </div>
       </div>

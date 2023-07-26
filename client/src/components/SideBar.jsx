@@ -22,10 +22,10 @@ function SideBar() {
   return (
     <>
       <div>
-        <div className="relative p-3 border bg-blue-100">
+        <div className="relative p-3 border bg-blue-100 z-50">
           <h2>Your Boards</h2>
           <div className="absolute top-0 right-0 p-3 ">
-            <button className="p-3 hover:bg-gray-300">...</button>
+            {/* <button className="p-3 hover:bg-gray-300">...</button> */}
             <AddNewBoard />
           </div>
         </div>

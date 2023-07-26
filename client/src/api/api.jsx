@@ -2,63 +2,55 @@ const url = "http://localhost:4000";
 
 // Create list
 export const createList = async (item, id) => {
-  console.log("API... createList", item, id);
   if (!id) throw new Error("Error: createList:  id");
 
   const response = await fetch(`${url}/boards/${id}/lists`, {
-    // using board id create list // api call
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(item),
   });
 
-  if (!response.ok) throw new Error("Error ", { cause: data.message });
+  if (!response.ok)
+    throw new Error("Error ", { cause: await response.json().message });
 
-  const data = await response.json();
-
-  return data;
+  return await response.json();
 };
 
+// craete card
 export const createCard = async (item, id) => {
-  console.log("API... createCard", item, id);
   if (!id) throw new Error("Error: createCard:  id");
 
   const response = await fetch(`${url}/lists/${id}/cards`, {
-    // using list id create cards
-    // api call
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(item),
   });
-  if (!response.ok) throw new Error("Error ", { cause: data.message });
+  if (!response.ok)
+    throw new Error("Error ", { cause: await response.json().message });
 
-  const data = await response.json();
-  console.log("API... createCard", data);
-
-  return data;
+  return await response.json();
 };
 
+//get all lists
 export const getLists = async (id) => {
-  // console.log("getLists bId:", id);
   if (!id) throw new Error("Error: getLists: id");
   const response = await fetch(`${url}/boards/${id}/lists`);
 
   if (!response.ok) {
-    throw new Error("Error ", { cause: data.message });
+    throw new Error("Error ", { cause: await response.json().message });
   }
-  const data = await response.json();
-  console.log("getLists... data", data);
-  return data;
+  return await response.json();
 };
 
+// get all boards
 export const getBoards = async () => {
   const response = await fetch(`${url}/boards`);
   const data = await response.json();
-  console.log("getBoards... data", data);
 
   return data;
 };
 
+// create new board
 export const createBoard = async (item) => {
   const response = await fetch(`${url}/boards`, {
     // using board id create list // api call
@@ -68,13 +60,14 @@ export const createBoard = async (item) => {
   });
 
   if (!response.ok)
-    throw new Error("Error createBoard", { cause: data.message });
+    throw new Error("Error createBoard", {
+      cause: await response.json().message,
+    });
 
-  const data = await response.json();
-  console.log("createBoard... data", data);
-  return data;
+  return await response.json();
 };
 
+// edit card
 export const editCard = async (item, id) => {
   console.log("editCard api... item", item, id);
   if (!id) throw new Error("ERROR : editCard : card id error");
@@ -84,12 +77,10 @@ export const editCard = async (item, id) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(item),
   });
-  if (!response.ok) throw new Error("Error ", { cause: data.message });
+  if (!response.ok)
+    throw new Error("Error ", { cause: await response.json().message });
 
-  const data = await response.json();
-  console.log("api.. editCard", data);
-
-  return data;
+  return await response.json();
 };
 
 // Delete card
@@ -101,10 +92,8 @@ export const deleteCard = async (item) => {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   });
-  if (!response.ok) throw new Error("Error ", { cause: data.message });
+  if (!response.ok)
+    throw new Error("Error ", { cause: await response.json().message });
 
-  const data = await response.json();
-  console.log("fetchRequest.. deleteCard", data);
-
-  return data;
+  return await response.json();
 };
