@@ -92,7 +92,7 @@ function Card({ card, index, listId }) {
           ref={ref}
           className="bg-white mt-2 p-3 shadow-md rounded-md opacity-${isDragging ? 0.5 : 1} relative"
         >
-          <button onClick={(e) => setShowModal(true)}>{card.card_name}</button>
+          <button onClick={(e) => setShowModal(true)}>{card.title}</button>
           {/* <button>{card.card_name}</button> */}
 
           <button

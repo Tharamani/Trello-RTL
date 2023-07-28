@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNewBoard } from "../features/boards/boardSlice";
+import { nanoid } from "nanoid";
 
 function AddNewBoard() {
   const [title, setTitle] = useState("");
@@ -11,7 +12,7 @@ function AddNewBoard() {
     try {
       e.preventDefault();
       if (!title) throw new Error("Please enter title");
-      dispatch(addNewBoard({ title }));
+      dispatch(addNewBoard({ board_id: nanoid(), title, lists: [] }));
 
       setTitle("");
       setIsFormVisible(false);
@@ -56,7 +57,7 @@ function AddNewBoard() {
               ></input>
             </label>
 
-            <button className="mt-4 p-3 py-1 absolute bg-blue-500 text-white shadow-md rounded-md">
+            <button className="mt-4 ml-24 p-3 py-1 absolute bg-blue-500 text-white shadow-md rounded-md">
               Create
             </button>
           </div>

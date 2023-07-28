@@ -1,42 +1,41 @@
-import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
-import * as api from "../../api/api";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 export const selectAllBoards = (state) => state.boardSlice.boards;
 
-// get all boards
-export const fetchBoards = createAsyncThunk("boards/fetchBoards", async () => {
-  const response = await api.getBoards();
-  return response;
-});
+const boardItems =
+  localStorage.getItem("boardItems") !== null
+    ? JSON.parse(localStorage.getItem("boardItems"))
+    : [];
 
-// Thunk to add a new board
-export const addNewBoard = createAsyncThunk(
-  "boards/addNewBoard",
-  async (item) => {
-    try {
-      const response = await api.createBoard(item);
-      console.log("addNewBoard : response.board ", response.board);
-      return response.board;
-    } catch (error) {
-      console.log("Error: addNewBoard ", error.message);
-    }
-  }
-);
+const setBoardItems = (item) => {
+  localStorage.setItem("boardItems", JSON.stringify(item));
+};
 
 const boardsSlice = createSlice({
   name: "boards",
   initialState: {
-    boards: [],
+    boards: boardItems,
   },
-  extraReducers(builder) {
-    builder.addCase(fetchBoards.fulfilled, (state, action) => {
+  reducers: {
+    setBoardId: (state, action) => {
+      state.boardId = action.payload;
+      console.log("setBoardId", current(state), action.payload);
+    },
+
+    fetchBoards: (state, action) => {
+      console.log("reducers, fetchBoards", action);
       state.boards = action.payload;
-    });
-    builder.addCase(addNewBoard.fulfilled, (state, action) => {
-      console.log("addNewBoard state, action", action);
+    },
+
+    addNewBoard: (state, action) => {
+      console.log("reducers, addNewBoard", action);
       state.boards.push(action.payload);
-    });
+      // setBoardItem(state.boards.map((board) => board));
+      setBoardItems(state.boards.map((board) => board));
+    },
   },
 });
+
+export const { fetchBoards, addNewBoard } = boardsSlice.actions;
 
 export default boardsSlice.reducer;

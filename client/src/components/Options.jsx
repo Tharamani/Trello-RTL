@@ -7,7 +7,7 @@ function Options({ pCard, listId, setIsEditCard }) {
 
   const deleteCard = async (e) => {
     console.log("deleteCard ");
-    dispatch(removeCard({ ...pCard, listId }));
+    dispatch(removeCard({ ...pCard, list_id: listId }));
     setIsEditCard(false);
   };
 

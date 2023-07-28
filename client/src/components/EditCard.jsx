@@ -5,13 +5,19 @@ import Options from "./Options";
 
 function EditCard({ pCard, setIsEditCard, listId }) {
   console.log("edit card for list id ", pCard, listId);
-  const [title, setTitle] = useState(pCard.card_name);
+  const [title, setTitle] = useState(pCard.title);
   const dispatch = useDispatch();
 
   const saveCard = (e) => {
     console.log("updateCard : title", title);
     if (title !== pCard.card_name)
-      dispatch(updateCard({ card_name: title, card_id: pCard.card_id }));
+      dispatch(
+        updateCard({
+          title,
+          card_id: pCard.card_id,
+          list_id: listId,
+        })
+      );
     setIsEditCard(false);
   };
 

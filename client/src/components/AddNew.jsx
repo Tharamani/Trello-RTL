@@ -5,7 +5,7 @@ import {
   addNewCard,
   selectBoardId,
 } from "../features/lists/listSlice";
-import { addNewBoard } from "../features/boards/boardSlice";
+import { nanoid } from "nanoid";
 
 function AddNew({ type, listId }) {
   const [title, setTitle] = useState("");
@@ -17,16 +17,13 @@ function AddNew({ type, listId }) {
   const saveCard = (e) => {
     try {
       e.preventDefault();
-      // console.log("saveCard : ", title);
 
       if (!title) throw new Error("Please enter title");
 
       if (type === "card") {
-        // console.log("add card", type);
-        dispatch(addNewCard({ title, list_id: listId }));
+        dispatch(addNewCard({ card_id: nanoid(), title, list_id: listId }));
       } else {
-        // console.log("add list", type);
-        dispatch(addNewList({ title, boardId: boardId }));
+        dispatch(addNewList({ list_id: nanoid(), title }));
       }
 
       setTitle("");

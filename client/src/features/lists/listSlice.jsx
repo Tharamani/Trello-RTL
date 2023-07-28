@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import * as api from "../../api/api";
+import { createSlice, current } from "@reduxjs/toolkit";
+// import * as api from "../../api/api";
 
 export const selectAllLists = (state) => state.listSlice.lists;
 
@@ -15,75 +15,77 @@ export const findListById = (prevItems, pListId) => {
   return prevItems.find((list) => list.list_id === pListId);
 };
 
-// get all lists
-export const fetchLists = createAsyncThunk("lists/fetchLists", async (id) => {
-  console.log("fetch lsits : id ", id);
-  const response = await api.getLists(id);
-  return response;
-});
+export const getListsBid = (prevItems, pBoardId) => {
+  console.log("prevItems , pBoardId", prevItems, pBoardId);
+  return prevItems.filter((list) => list.board_id === pBoardId);
+};
 
-// add a new list
-export const addNewList = createAsyncThunk(
-  "lists/addNewList",
-  async (pItem) => {
-    try {
-      const response = await api.createList(
-        { title: pItem.title },
-        pItem.boardId
-      );
-      console.log("addNewList : response.list ", response.list);
-      return response.list;
-    } catch (error) {
-      console.log("Error: addNewList ", error.message);
-    }
-  }
-);
+const listsItems =
+  localStorage.getItem("listsItems") !== null
+    ? JSON.parse(localStorage.getItem("listsItems"))
+    : [];
 
-// add a new card
-export const addNewCard = createAsyncThunk("lists/addNewCard", async (item) => {
-  try {
-    const response = await api.createCard({ title: item.title }, item.list_id);
-    console.log("addNewCard : response", response);
-    return response.card;
-  } catch (error) {
-    console.log("Error: addNewCard ", error.message);
-  }
-});
-
-// update card
-export const updateCard = createAsyncThunk("lists/updateCard", async (item) => {
-  try {
-    console.log("updateCard : item", item);
-    const response = await api.editCard(
-      { title: item.card_name },
-      item.card_id
-    );
-    console.log("addNewCard : response", response);
-    return response.card;
-  } catch (error) {
-    console.log("Error: updateCard ", error.message);
-  }
-});
-
-//remove card
-export const removeCard = createAsyncThunk("lists/removeCard", async (item) => {
-  try {
-    console.log("removeCard : item", item);
-    const response = await api.deleteCard(item);
-    console.log("addNewCard : response", response);
-    return item;
-  } catch (error) {
-    console.log("Error: removeCard ", error.message);
-  }
-});
+const setListsItems = (item) => {
+  localStorage.setItem("listsItems", JSON.stringify(item));
+};
 
 const listsSlice = createSlice({
   name: "lists",
   initialState: {
-    lists: [],
+    lists: listsItems,
     boardId: 0,
   },
   reducers: {
+    setBoardId: (state, action) => {
+      // state[action.payload] = state.lists;
+      state.boardId = action.payload.board_id;
+    },
+
+    addNewList: (state, action) => {
+      if (state.boardId === action.payload.board_id)
+        state.lists.push(action.payload);
+      setListsItems(state.lists.map((list) => list));
+    },
+
+    addNewCard: (state, action) => {
+      console.log("addNewCard", action, current(state));
+      let existingList = state.lists.find(
+        (list) => list.list_id === action.payload.list_id
+      );
+      if (!existingList.cards) existingList.cards = [];
+
+      existingList.cards.push(action.payload);
+      setListsItems(state.lists);
+    },
+
+    updateCard: (state, action) => {
+      console.log("updateCard", action, current(state));
+      let existingList = state.lists.find(
+        (list) => list.list_id === action.payload.list_id
+      );
+
+      existingList.cards.find(
+        (card) => card.card_id === action.payload.card_id
+      ).title = action.payload.title;
+      setListsItems(state.lists.map((list) => list));
+    },
+
+    removeCard: (state, action) => {
+      console.log("removeCard", action, current(state));
+
+      let existingList = state.lists.find(
+        (list) => list.list_id === action.payload.list_id
+      );
+
+      existingList.cards.splice(
+        existingList.cards.indexOf(
+          findCardById(existingList.cards, action.payload.card_id)
+        ),
+        1
+      );
+      setListsItems(state.lists.map((list) => list));
+    },
+
     moveCard: (state, action) => {
       const { sourceListId, targetListId, sourceIndex, targetIndex } =
         action.payload;
@@ -111,56 +113,17 @@ const listsSlice = createSlice({
         targetCards.splice(targetIndex, 0, movedCard);
       }
     },
-    setBoardId: (state, action) => {
-      state.boardId = action.payload;
-    },
-  },
-  extraReducers(builder) {
-    // add new list
-    builder.addCase(addNewList.fulfilled, (state, action) => {
-      // We can directly add the new list object to our lists array
-      state.lists.push(action.payload);
-    });
-
-    // add new card
-    builder.addCase(addNewCard.fulfilled, (state, action) => {
-      let existingList = state.lists.find(
-        (list) => list.list_id === action.payload.list_id
-      );
-      if (!existingList.cards) existingList.cards = [];
-
-      existingList.cards.push(action.payload);
-    });
-
-    // get lists
-    builder.addCase(fetchLists.fulfilled, (state, action) => {
-      state.lists = action.payload;
-    });
-
-    // edit card
-    builder.addCase(updateCard.fulfilled, (state, action) => {
-      // state.lists = action.payload;
-      console.log("updateCard action", action);
-      findListById(state.lists, action.payload.list_id).cards.find(
-        (card) => card.card_id === action.payload.card_id
-      ).card_name = action.payload.card_name;
-    });
-
-    // delete card
-    builder.addCase(removeCard.fulfilled, (state, action) => {
-      console.log("updateCard action", action);
-      const existingList = findListById(state.lists, action.payload.listId);
-
-      existingList.cards.splice(
-        existingList.cards.indexOf(
-          findCardById(existingList.cards, action.payload.card_id)
-        ),
-        1
-      );
-    });
   },
 });
 
-export const { moveCard, setBoardId } = listsSlice.actions;
+export const {
+  fetchLists,
+  addNewList,
+  addNewCard,
+  updateCard,
+  removeCard,
+  moveCard,
+  setBoardId,
+} = listsSlice.actions;
 
 export default listsSlice.reducer;
