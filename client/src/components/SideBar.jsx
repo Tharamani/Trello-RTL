@@ -24,7 +24,7 @@ function SideBar() {
         </div>
 
         <div className="sidebar h-screen w-[300px] border bg-blue-100">
-          {
+          {boards?.length > 0 && (
             <div key={boards.board_id}>
               <div className="p-3 bg-blue-100 hover:bg-gray-300">
                 <div className="mb-0">
@@ -34,7 +34,7 @@ function SideBar() {
                 </div>
               </div>
             </div>
-          }
+          )}
         </div>
       </div>
     </>
