@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewBoard } from "../features/boards/boardSlice";
+import { addNewBoard } from "../features/lists/listSlice";
 import { nanoid } from "nanoid";
 
 function AddNewBoard() {

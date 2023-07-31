@@ -1,7 +1,8 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-// import * as api from "../../api/api";
 
-export const selectAllLists = (state) => state.listSlice.lists;
+export const selectAllLists = (state) => state.listSlice.boards.lists;
+
+export const selectAllBoards = (state) => state.listSlice.boards;
 
 export const selectBoardId = (state) => state.listSlice.boardId;
 
@@ -15,108 +16,108 @@ export const findListById = (prevItems, pListId) => {
   return prevItems.find((list) => list.list_id === pListId);
 };
 
-export const getListsBid = (prevItems, pBoardId) => {
-  console.log("prevItems , pBoardId", prevItems, pBoardId);
-  return prevItems.filter((list) => list.board_id === pBoardId);
-};
+// Get from local storage
+const boardItems =
+  localStorage.getItem("boardItems") !== null
+    ? JSON.parse(localStorage.getItem("boardItems"))
+    : {};
 
-const listsItems =
-  localStorage.getItem("listsItems") !== null
-    ? JSON.parse(localStorage.getItem("listsItems"))
-    : [];
-
-const setListsItems = (item) => {
-  localStorage.setItem("listsItems", JSON.stringify(item));
+//Store in local storage
+const setBoardItems = (item) => {
+  localStorage.setItem("boardItems", JSON.stringify(item));
 };
 
 const listsSlice = createSlice({
   name: "lists",
   initialState: {
-    lists: listsItems,
     boardId: 0,
+    boards: boardItems,
   },
   reducers: {
-    setBoardId: (state, action) => {
-      // state[action.payload] = state.lists;
+    addNewBoard: (state, action) => {
       state.boardId = action.payload.board_id;
+      state.boards = action.payload;
+      setBoardItems(state.boards);
     },
 
     addNewList: (state, action) => {
-      if (state.boardId === action.payload.board_id)
-        state.lists.push(action.payload);
-      setListsItems(state.lists.map((list) => list));
+      if (!state.boards.lists) state.boards.lists = [];
+
+      state.boards.lists.push(action.payload);
+      setBoardItems(state.boards);
     },
 
     addNewCard: (state, action) => {
-      console.log("addNewCard", action, current(state));
-      let existingList = state.lists.find(
-        (list) => list.list_id === action.payload.list_id
+      let existingList = findListById(
+        state.boards.lists,
+        action.payload.list_id
       );
       if (!existingList.cards) existingList.cards = [];
 
       existingList.cards.push(action.payload);
-      setListsItems(state.lists);
+      setBoardItems(state.boards);
     },
 
     updateCard: (state, action) => {
-      console.log("updateCard", action, current(state));
-      let existingList = state.lists.find(
-        (list) => list.list_id === action.payload.list_id
+      let existingList = findListById(
+        state.boards.lists,
+        action.payload.list_id
       );
 
       existingList.cards.find(
         (card) => card.card_id === action.payload.card_id
       ).title = action.payload.title;
-      setListsItems(state.lists.map((list) => list));
+      setBoardItems(state.boards);
     },
 
     removeCard: (state, action) => {
-      console.log("removeCard", action, current(state));
-
-      let existingList = state.lists.find(
-        (list) => list.list_id === action.payload.list_id
+      let existingList = findListById(
+        state.boards.lists,
+        action.payload.list_id
       );
-
       existingList.cards.splice(
         existingList.cards.indexOf(
           findCardById(existingList.cards, action.payload.card_id)
         ),
         1
       );
-      setListsItems(state.lists.map((list) => list));
+      setBoardItems(state.boards);
     },
 
     moveCard: (state, action) => {
       const { sourceListId, targetListId, sourceIndex, targetIndex } =
         action.payload;
-      const sourceListIndex = state.lists.indexOf(
-        state.lists.find((list) => list.list_id === sourceListId)
+      const sourceListIndex = state.boards.lists.indexOf(
+        state.boards.lists.find((list) => list.list_id === sourceListId)
       );
 
-      const targetListIndex = state.lists.indexOf(
-        state.lists.find((list) => list.list_id === targetListId)
+      const targetListIndex = state.boards.lists.indexOf(
+        state.boards.lists.find((list) => list.list_id === targetListId)
       );
-
-      console.log("listsSlice sourceListIndex", sourceListIndex);
-      console.log("listsSlice targetListIndex", targetListIndex);
 
       // Move the card within the same list
       if (sourceListId === targetListId) {
-        const cards = state.lists[sourceListIndex].cards;
+        const cards = state.boards.lists[sourceListIndex].cards;
         const [movedCard] = cards.splice(sourceIndex, 1); // splice(start, deleteCount)
         cards.splice(targetIndex, 0, movedCard); // splice(start, deleteCount, item0)
       } // Move the card between different lists
       else {
-        const sourceCards = state.lists[sourceListIndex].cards;
-        const targetCards = state.lists[targetListIndex].cards;
+        const sourceCards = state.boards.lists[sourceListIndex].cards;
+        const targetCards = state.boards.lists[targetListIndex].cards;
         const [movedCard] = sourceCards.splice(sourceIndex, 1);
         targetCards.splice(targetIndex, 0, movedCard);
       }
+      setBoardItems(state.boards);
+    },
+
+    setBoardId: (state, action) => {
+      state.boardId = action.payload;
     },
   },
 });
 
 export const {
+  addNewBoard,
   fetchLists,
   addNewList,
   addNewCard,

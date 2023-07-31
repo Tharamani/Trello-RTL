@@ -14,7 +14,7 @@ function AddNew({ type, listId }) {
 
   const boardId = useSelector(selectBoardId);
 
-  const saveCard = (e) => {
+  const save = (e) => {
     try {
       e.preventDefault();
 
@@ -23,7 +23,7 @@ function AddNew({ type, listId }) {
       if (type === "card") {
         dispatch(addNewCard({ card_id: nanoid(), title, list_id: listId }));
       } else {
-        dispatch(addNewList({ list_id: nanoid(), title }));
+        dispatch(addNewList({ list_id: nanoid(), title, board_id: boardId }));
       }
 
       setTitle("");
@@ -40,7 +40,7 @@ function AddNew({ type, listId }) {
         </button>
       )}
       {isFormVisible && (
-        <form onSubmit={saveCard} className="mt-3">
+        <form onSubmit={save} className="mt-3">
           <input
             className="w-full h-10 p-2 shadow-md rounded-md"
             value={title}
